@@ -1,5 +1,5 @@
-
 import tkinter as tk
+import secrets
 from tkinter import filedialog, messagebox
 from aes_file import encrypt_file, decrypt_file
 
@@ -13,7 +13,6 @@ window = tk.Tk()
 window.title("AES File Security")
 window.geometry("650x550")
 window.resizable(False, False)
-
 window.configure(bg="#F1F5F9")
 
 
@@ -160,6 +159,12 @@ def decrypt_action():
             str(error)
         )
 
+def generate_key():
+
+    key = secrets.token_bytes(16)
+
+    key_entry.delete(0, tk.END)
+    key_entry.insert(0, key.hex().upper())
 
 # ==============================
 # PHAN TIEU DE
@@ -339,6 +344,17 @@ decrypt_button.pack(
     ipady=12,
     padx=(8, 0)
 )
+
+generate_button = tk.Button(
+    content,
+    text="TAO KHOA NGAU NHIEN",
+    font=("Arial", 10, "bold"),
+    bg="#64748B",
+    fg="white",
+    command=generate_key
+)
+
+generate_button.pack(pady=5)
 
 
 # ==============================
