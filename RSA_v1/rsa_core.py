@@ -1,10 +1,10 @@
 """
 Ý tưởng RSA:
   1. Người dùng chọn 2 số nguyên tố p và q.
-  2. n   = p * q                  (n được công khai)
-  3. phi = (p - 1) * (q - 1)      (giữ bí mật)
-  4. Chọn e sao cho gcd(e, phi) = 1            -> KHÓA CÔNG KHAI = (e, n)
-  5. Tính d sao cho (e * d) % phi = 1          -> KHÓA BÍ MẬT   = (d, n)
+  2. n   = p * q -> (n công khai)
+  3. phi = (p - 1) * (q - 1) -> (giữ bí mật)
+  4. Chọn e sao cho gcd(e, phi) = 1  -> KHÓA CÔNG KHAI = (e, n)
+  5. Tính d sao cho (e * d) mod phi = 1  -> KHÓA BÍ MẬT = (d, n)
 
   Mã hóa : c = m^e mod n      (m là số đại diện cho 1 ký tự)
   Giải mã: m = c^d mod n
@@ -80,7 +80,7 @@ def make_keys(p, q):
     phi = (p - 1) * (q - 1)
 
     # Bước 4: chọn e (1 < e < phi và gcd(e, phi) = 1)
-    e = 65537 if phi > 65537 else 3     # 65537 là giá trị e phổ biến
+    e = 65537 if phi > 65537 else 3     # 65537 là e phổ biến
     while e < phi and gcd(e, phi) != 1:
         e += 2
     if e >= phi:
@@ -93,7 +93,7 @@ def make_keys(p, q):
 
 # PHẦN 3: BASE64 (đổi dãy byte -> chuỗi chữ cho gọn, tự viết)
 # Base64: cứ 3 byte (24 bit) được chia thành 4 nhóm 6 bit,
-# mỗi nhóm 6 bit ứng với 1 ký tự trong bảng dưới.
+# mỗi nhóm 6 bit ứng với 1 ký tự trong bảng.
 
 BANG_BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
@@ -164,7 +164,6 @@ def bytes_to_int(byte_list):
 
 # doi chuoi 'e, n' (hoac 'd, n') thanh 2 so nguyen
 def parse_key(text):
-    """Đổi chuỗi 'e, n' (hoặc 'd, n') thành 2 số nguyên."""
     parts = text.replace(",", " ").split()
     if len(parts) != 2:
         raise ValueError("Khóa phải gồm 2 số, ví dụ: 65537, 123456789")
