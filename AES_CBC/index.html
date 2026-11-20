@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mã hóa AES-CBC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <table>
+        <tr>
+            <th colspan="2">MÃ HÓA AES (AES-CBC)</th>
+        </tr>
+        <tr>
+            <td>Định dạng Key & IV</td>
+            <td>
+                <select id="keyFormat">
+          <option value="utf8">UTF-8 (Văn bản thường)</option>
+          <option value="hex">Hex</option>
+          <option value="base64">Base64</option>
+        </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Nhập khóa bí mật (Key: 16 / 24 / 32 byte)</td>
+            <td><input type="text" id="key" placeholder="Ví dụ: 1234567890123456"></td>
+        </tr>
+        <tr>
+            <td>Nhập vector khởi tạo (IV: đúng 16 byte)</td>
+            <td><input type="text" id="iv" placeholder="Ví dụ: abcdef1234567890"></td>
+        </tr>
+        <tr>
+            <td>Tạo khóa mẫu</td>
+            <td><button id="btnGenKey">Tạo Key & IV ngẫu nhiên</button></td>
+        </tr>
+        <tr>
+            <td>Mã Key (Hex)</td>
+            <td><input type="text" id="keyHex" readonly></td>
+        </tr>
+        <tr>
+            <td>Các khóa vòng (Round Keys)</td>
+            <td><textarea id="roundKeys" readonly></textarea></td>
+        </tr>
+        <tr>
+            <td>Định dạng bản mã (Ciphertext)</td>
+            <td>
+                <select id="cipherFormat">
+          <option value="base64">Base64</option>
+          <option value="hex">Hex</option>
+        </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Nhập đầu vào</td>
+            <td><textarea id="inputText" placeholder="Nhập văn bản cần mã hóa, hoặc chuỗi Base64/Hex cần giải mã..."></textarea></td>
+        </tr>
+        <tr>
+            <td>Xử lý</td>
+            <td>
+                <button id="btnEncrypt">Mã hóa</button>
+                <button id="btnDecrypt">Giải mã</button>
+            </td>
+        </tr>
+        <tr>
+            <td>Đầu ra</td>
+            <td><textarea id="outputText" readonly></textarea></td>
+        </tr>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 16px;
+    margin: 0 auto;
+    padding: 15px;
+    background-color: #fff;
+    width: 1000px;
+    display: flex;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #999;
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    text-align: center;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+td:first-child {
+    width: 42%;
+}
+
+input[type="text"],
+textarea,
+select {
+    padding: 4px 6px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    border: 1px solid #767676;
+    box-sizing: border-box;
+}
+
+input[type="text"],
+textarea {
+    width: 90%;
+}
+
+select {
+    min-width: 200px;
+}
+
+textarea {
+    height: 95px;
+    resize: vertical;
+}
+
+#keyHex,
+#roundKeys {
+    font-family: Consolas, "Courier New", monospace;
+}
+
+#roundKeys {
+    height: 180px;
+}
+
+button {
+    padding: 4px 12px;
+    margin-right: 12px;
+    font-size: 14px;
+    cursor: pointer;
+}
