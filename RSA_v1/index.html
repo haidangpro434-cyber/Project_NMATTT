@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mã hóa RSA</title>
+<style>
+  body  { font-family: "Times New Roman", serif; font-size: 18px; margin: 14px; }
+  table { width: 100%; border-collapse: collapse; }
+  td    { border: 1px solid #666; padding: 14px; vertical-align: middle; }
+  .nhan { width: 40%; }
+  .tieude { text-align: center; }
+  textarea, input[type=text] { width: 90%; box-sizing: border-box; font-size: 16px; }
+  textarea { height: 100px; }
+  input[readonly] { background: #f2f2f2; }
+  button { font-size: 16px; padding: 3px 10px; margin-right: 24px; }
+  .ghichu { font-size: 14px; color: #555; margin-top: 6px; }
+  #loi { color: #c00; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<table>
+  <tr>
+    <td colspan="2" class="tieude">
+      <b>MÃ HÓA RSA</b><br>
+      <i><b>(tự cài đặt bằng Python, không dùng thư viện mã hóa)</b></i>
+    </td>
+  </tr>
+  <tr>
+    <td class="nhan">Nhập số nguyên tố p</td>
+    <td>
+      <input type="text" id="p" value="2003" oninput="xoaKhoa()">
+      <div class="ghichu">Ví dụ số nguyên tố: 2003, 2011, 3001, 5003, 10007</div>
+    </td>
+  </tr>
+  <tr>
+    <td class="nhan">Nhập số nguyên tố q (khác p)</td>
+    <td>
+      <input type="text" id="q" value="2011" oninput="xoaKhoa()">
+      <div class="ghichu">n = p × q nên lớn hơn mã ký tự (tiếng Việt có dấu cần n &gt; 7930)</div>
+    </td>
+  </tr>
+  <tr>
+    <td class="nhan">Tính khóa</td>
+    <td><button onclick="taoKhoa()">Tạo khóa</button><span id="loi"></span></td>
+  </tr>
+  <tr>
+    <td class="nhan">n = p × q</td>
+    <td><input type="text" id="n" readonly></td>
+  </tr>
+  <tr>
+    <td class="nhan">φ(n) = (p − 1) × (q − 1)</td>
+    <td><input type="text" id="phi" readonly></td>
+  </tr>
+  <tr>
+    <td class="nhan">e (khóa công khai gồm e và n)</td>
+    <td><input type="text" id="e" readonly></td>
+  </tr>
+  <tr>
+    <td class="nhan">d (khóa bí mật gồm d và n)</td>
+    <td><input type="text" id="d" readonly></td>
+  </tr>
+  <tr>
+    <td class="nhan">Nhập đầu vào</td>
+    <td><textarea id="dauvao"></textarea></td>
+  </tr>
+  <tr>
+    <td class="nhan">Xử lý</td>
+    <td>
+      <button onclick="maHoa()">Mã hóa</button>
+      <button onclick="giaiMa()">Giải mã</button>
+    </td>
+  </tr>
+  <tr>
+    <td class="nhan">Đầu ra</td>
+    <td><textarea id="daura" readonly></textarea></td>
+  </tr>
+</table>
+
+<script>
+// Lấy ô nhập theo id cho ngắn gọn
+function lay(id) { return document.getElementById(id); }
+
+// Địa chỉ server Python (phải chạy: python server.py)
+// Nhờ dòng này, trang mở bằng Live Server hay mở trực tiếp đều dùng được.
+const SERVER = "http://localhost:8000";
+
+// Gửi dữ liệu lên server Python và nhận kết quả về
+async function goiApi(duongDan, duLieu) {
+  let phanHoi;
+  try {
+    phanHoi = await fetch(SERVER + duongDan, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(duLieu)
+    });
+  } catch (loi) {
+    throw new Error("Không kết nối được server. Hãy chạy: python server.py");
+  }
+  const ketQua = await phanHoi.json();
+  if (!phanHoi.ok) throw new Error(ketQua.error);
+  return ketQua;
+}
+
+// Xóa các ô kết quả (khi người dùng sửa p hoặc q)
+function xoaKhoa() {
+  lay("n").value = "";
+  lay("phi").value = "";
+  lay("e").value = "";
+  lay("d").value = "";
+  lay("loi").textContent = "";
+}
+
+// Nút "Tạo khóa": gửi p, q lên server, nhận về n, φ(n), e, d
+async function taoKhoa() {
+  try {
+    const k = await goiApi("/api/generate", { p: lay("p").value, q: lay("q").value });
+    lay("loi").textContent = "";
+    lay("n").value = k.n;
+    lay("phi").value = k.phi;
+    lay("e").value = k.e;
+    lay("d").value = k.d;
+  } catch (loi) {
+    xoaKhoa();
+    lay("loi").textContent = "Lỗi: " + loi.message;
+  }
+}
+
+// Nút "Mã hóa": dùng khóa công khai (e, n)
+async function maHoa() {
+  if (!lay("e").value) {
+    lay("daura").value = "Lỗi: hãy nhập p, q rồi bấm Tạo khóa trước";
+    return;
+  }
+  try {
+    const kq = await goiApi("/api/encrypt", {
+      text: lay("dauvao").value,
+      key: lay("e").value + ", " + lay("n").value
+    });
+    lay("daura").value = kq.result;
+  } catch (loi) {
+    lay("daura").value = "Lỗi: " + loi.message;
+  }
+}
+
+// Nút "Giải mã": dùng khóa bí mật (d, n)
+async function giaiMa() {
+  if (!lay("d").value) {
+    lay("daura").value = "Lỗi: hãy nhập p, q rồi bấm Tạo khóa trước";
+    return;
+  }
+  try {
+    const kq = await goiApi("/api/decrypt", {
+      text: lay("dauvao").value,
+      key: lay("d").value + ", " + lay("n").value
+    });
+    lay("daura").value = kq.result;
+  } catch (loi) {
+    lay("daura").value = "Lỗi: " + loi.message;
+  }
+}
+
+// Tự tính khóa với p, q mặc định khi mở trang
+taoKhoa();
+</script>
+
+</body>
+</html>
